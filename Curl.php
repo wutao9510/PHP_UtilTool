@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Curl 类（单例）
+ */
 class Curl
 {
     /**
@@ -36,10 +39,12 @@ class Curl
         curl_setopt($ch, CURLOPT_HEADER , false);
         curl_setopt($ch, CURLOPT_TIMEOUT, 5);
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_AUTOREFERER, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        if (1 == strpos('$'.$url, 'https://')) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        }
         $result = curl_exec($ch);
         curl_close($ch);
         return $result;
@@ -55,11 +60,13 @@ class Curl
         curl_setopt($ch, CURLOPT_HEADER , false);
         curl_setopt($ch, CURLOPT_TIMEOUT, 5);
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_AUTOREFERER, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
+        if (1 == strpos('$'.$url, 'https://')) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        }
         if(!empty($data)){
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
@@ -103,14 +110,16 @@ class Curl
         $this->checkCurl();
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSLCERTTYPE, 'PEM');
         curl_setopt($ch, CURLOPT_SSLKEYTYPE, 'PEM');
         curl_setopt($ch, CURLOPT_SSLCERT, $certPath);
         curl_setopt($ch, CURLOPT_SSLKEY, $keyPath);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
+        if (1 == strpos('$'.$url, 'https://')) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        }
         if (!empty($data)) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
