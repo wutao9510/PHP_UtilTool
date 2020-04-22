@@ -10,7 +10,12 @@ class Curl
      */
     private static $instance = null;
 
-    private function __construct(){}
+    private function __construct()
+    {
+        if (!function_exists('curl_init')) {
+            exit('未开启curl扩展！');
+        }
+    }
 
     private function __clone(){}
 
@@ -31,7 +36,6 @@ class Curl
      */
     public function get(string $url, array $data = [])
     {
-        $this->checkCurl();
         if(!empty($data)){
             $url .= '?' . http_build_query($data);
         }
@@ -55,7 +59,6 @@ class Curl
      */
     public function post(string $url, array $data = [])
     {
-        $this->checkCurl();
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_HEADER , false);
         curl_setopt($ch, CURLOPT_TIMEOUT, 5);
@@ -80,7 +83,6 @@ class Curl
      */
     public function postRawData(string $url, array $data = [])
     {
-        $this->checkCurl();
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_HEADER , false);
         curl_setopt($ch, CURLOPT_TIMEOUT, 5);
@@ -107,7 +109,6 @@ class Curl
      */
     public function postSslVerify(string $url, array $data, string $certPath, string $keyPath)
     {
-        $this->checkCurl();
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_SSLCERTTYPE, 'PEM');
@@ -128,14 +129,4 @@ class Curl
         return $result;
     }
 
-
-    /**
-     * 检查是否开启curl
-     */
-    protected function checkCurl()
-    {
-        if (!function_exists('curl_init')) {
-            exit('未开启curl扩展！');
-        }
-    }
 }
