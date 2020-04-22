@@ -7,11 +7,6 @@ class Xml
      */
     private static $instance = null;
 
-    /**
-     * simpleXml实例
-     */
-    protected $simpleXml = null;
-
     private function __construct(){}
 
     private function __clone(){}
@@ -44,49 +39,75 @@ class Xml
             exit('保存路径不能为空！');
         }
         $xmlObj = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?><'.$rootName.' />');
-        $this->insertData($xmlObj, $data);
+
+        foreach ($data as $item) {
+            if (count($item) > 2) {
+                exit("数据格式错误！");
+            }
+            $this->insertData($xmlObj, $item);
+        }
         $result = $xmlObj->asXML($savePath);
         return is_null($savePath) ?? $result;
     }
 
+    /**
+     * 读取xml文件
+     * @param  string
+     * @return [object]
+     */
     public function readXmlFile(string $filePath)
     {
         if (!file_exists($filePath)) {
             exit('文件不存在！');
         }
-        $xmlObj = simplexml_load_file($filePath);
-        return $xmlObj;
+        return simplexml_load_file($filePath);
+    }
+
+    /**
+     * 读取xml字符串
+     * @param  string
+     * @return [object]
+     */
+    public function readXmlString(string $xmlString)
+    {
+        if (!file_exists($filePath)) {
+            exit('为输入xml串！');
+        }
+        return simplexml_load_string($xmlString);
     }
 
     /**
      * 递归插入节点
      * @param  object root xml
      * @param  array data
-     * @return object xml node oject
+     * @return void
      */
     protected function insertData($obj, array $data)
     {
         try {
             if (!empty($data)) {
-                foreach ($data as $item) {
-                    if (count($item) > 2) {
-                        throw new Exception("数据格式错误！", 1);
-                    }
-                    $nodeName = $this->getExceptKey('attribute', $item)[0];
-                    $node = $obj->addChild($nodeName);
-                    if (isset($item['attribute']) && $item['attribute']) {
-                        foreach ($$item['attribute'] as $attrName => $attrValue) {
-                            $node->addAttribute($attrName, $attrValue);
-                        }
-                    }
-                    if (is_array($item[$nodeName])) {
-                        $this->insertData($node, $item[$nodeName]);
-                    }else{
-                        $node->addChild($item[$nodeName]);
+                $nodeName = $this->getExceptKey('attribute', $data)[0];
+                $node = $obj->addChild($nodeName);
+                if (isset($data['attribute']) && $data['attribute']) {
+                    foreach ($data['attribute'] as $attrName => $attrValue) {
+                        $node->addAttribute($attrName, $attrValue);
                     }
                 }
+                if (is_array($data[$nodeName])) {
+                    foreach ($data[$nodeName] as $name => $value) {
+                       if (is_array($value)) {
+                           $this->insertData($node, $value);
+                       } else {
+                           $node->addChild($name, $value);
+                       }
+                    }
+                } else {
+                    foreach ($data as $key => $value) {
+                        $node->addChild($key, $value);
+                    }
+                }
+                
             }
-            return $obj;        
         } catch (\Exception $e) {
             exit($e->getMessage());
         }
@@ -98,7 +119,7 @@ class Xml
      * @param  array arr
      * @return array
      */
-    protected function getExceptKey(string $key, array &$arr)
+    protected function getExceptKey(string $key, array $arr)
     {
         $result = [];
         if ($key && $arr) {
@@ -110,5 +131,50 @@ class Xml
         return $result;
     }
 }
+
+/**
+ * [demo]
+ * Xml::instance()->createSimpleXml([
+ *  [
+ *      'attribute'=>[
+ *          'id'=>1,
+ *          'class'=>'ds'
+ *       ],
+ *      'staff'=>[
+ *          'name'=>'alice',
+ *          'age'=>20,
+ *          'sex'=>1
+ *       ]
+ *  ],
+ *  [
+ *      'attribute'=>[
+ *          'id'=>2,
+ *          'class'=>'dss'
+ *       ],
+ *      'staff'=>[
+ *          'name'=>'joy',
+ *          'age'=>21,
+ *          'sex'=>2
+ *       ]
+ *  ],
+ *  [
+ *      'attribute'=>[
+ *          'id'=>3,
+ *          'class'=>'dsf'
+ *       ],
+ *      'staff'=>[
+ *          'name'=>'popson',
+ *          'age'=>2,
+ *          'sex'=>1,
+ *          'person'=>[
+ *              'habit'=>'bascketball',
+ *              'music'=>'piters',
+ *              'side'=>'tall'
+ *              ]
+ *          ]
+ *       ]
+ *  ]],'./man.xml','list');
+ */
+
 
 
