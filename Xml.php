@@ -28,31 +28,86 @@ class Xml
         return self::$instance;
     }
 
-    public function createXml(array $data, string $rootName = 'root')
+    /**
+     * 生成xml文件/string
+     * @param  array data 数据
+     * @param  string savePath 保存路径，传null输出字符串
+     * @param  string rootName 根节点
+     * @return void/string
+     */
+    public function createSimpleXml(array $data, string $savePath = null, string $rootName = 'root')
     {
         if (empty($data)) {
             exit('数据不能为空！');
+        }
+        if (empty($savePath)) {
+            exit('保存路径不能为空！');
         }
         $xmlObj = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?><'.$rootName.' />');
-        foreach ($data as $value) {
-            # code...
-        }
-        $book = $this->simpleXml->addChild('book');
-        $book->addAttribute('id', 1);
-        $book->addAttribute('class', 'book');
-        $paper = $book->addChild('paper');
-        $paper->addChild('author', 'mark');
-        $paper->addChild('time', '2020-01-02');
-
-        $this->simpleXml->asXML('a.xml');
+        $this->insertData($xmlObj, $data);
+        $result = $xmlObj->asXML($savePath);
+        return is_null($savePath) ?? $result;
     }
 
+    public function readXmlFile(string $filePath)
+    {
+        if (!file_exists($filePath)) {
+            exit('文件不存在！');
+        }
+        $xmlObj = simplexml_load_file($filePath);
+        return $xmlObj;
+    }
+
+    /**
+     * 递归插入节点
+     * @param  object root xml
+     * @param  array data
+     * @return object xml node oject
+     */
     protected function insertData($obj, array $data)
     {
-        if (empty($data)) {
-            exit('数据不能为空！');
+        try {
+            if (!empty($data)) {
+                foreach ($data as $item) {
+                    if (count($item) > 2) {
+                        throw new Exception("数据格式错误！", 1);
+                    }
+                    $nodeName = $this->getExceptKey('attribute', $item)[0];
+                    $node = $obj->addChild($nodeName);
+                    if (isset($item['attribute']) && $item['attribute']) {
+                        foreach ($$item['attribute'] as $attrName => $attrValue) {
+                            $node->addAttribute($attrName, $attrValue);
+                        }
+                    }
+                    if (is_array($item[$nodeName])) {
+                        $this->insertData($node, $item[$nodeName]);
+                    }else{
+                        $node->addChild($item[$nodeName]);
+                    }
+                }
+            }
+            return $obj;        
+        } catch (\Exception $e) {
+            exit($e->getMessage());
         }
-        
+    }
+
+    /**
+     * 获取除去键key的其他元素的键
+     * @param  string key
+     * @param  array arr
+     * @return array
+     */
+    protected function getExceptKey(string $key, array &$arr)
+    {
+        $result = [];
+        if ($key && $arr) {
+            if (array_key_exists($key, $arr)) {
+                unset($arr[$key]);
+            }
+            $result = array_keys($arr);
+        }
+        return $result;
     }
 }
 
