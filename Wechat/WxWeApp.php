@@ -5,7 +5,8 @@ use Chenmu\Sys\Curl;
 
 /**
  * 小程序服务端类
- * wx weapp
+ * Class WxWeApp
+ * @package Chenmu\Wechat
  */
 class WxWeApp
 {
@@ -24,12 +25,12 @@ class WxWeApp
 		$this->wxConfig['mch_id'] = $mchId;
 	}
 
-	/**
-	 * 单例出口
-	 * @param  string
-	 * @param  string
-	 * @return [instance]
-	 */
+    /**
+     * 单例出口
+     * @param string $appId
+     * @param string $appSecret
+     * @return WxWeApp|null
+     */
 	public static function instance(string $appId, string $appSecret)
 	{
 		if (empty($appId) || empty($appSecret)) {
@@ -45,7 +46,7 @@ class WxWeApp
 	/**
 	 * 登录凭证校验，jscode2session
 	 * @param  string jscode
-	 * @return [array]
+	 * @return array
 	 */
 	public function login(string $jsCode)
 	{
@@ -67,7 +68,7 @@ class WxWeApp
 
 	/**
 	 * 获取小程序全局唯一后台接口调用凭据access_token,调用大多数后台接口都需access_token
-	 * @return [array]
+	 * @return array
 	 */
 	public function getAccessToken()
 	{
@@ -83,14 +84,14 @@ class WxWeApp
 		}
 	}
 
-	/**
-	 * 用户支付完成后，获取该用户的UnionId，无需用户授权
-	 * 注意：调用前需要用户完成支付，且在支付后的五分钟内有效
-	 * @param  string $accessToken
-	 * @param  string $openId
-	 * @param  array  $orderInfo
-	 * @return [array]
-	 */
+    /**
+     * 用户支付完成后，获取该用户的UnionId，无需用户授权
+     * 注意：调用前需要用户完成支付，且在支付后的五分钟内有效
+     * @param string $accessToken
+     * @param string $openId
+     * @param array $orderInfo
+     * @return mixed
+     */
 	public function getPaidUnionId(string $accessToken, string $openId, array $orderInfo = [])
 	{
 		try {
@@ -108,14 +109,14 @@ class WxWeApp
 		}
 	}
 
-	/**
-	 * 获取用户访问小程序日留存 post
-	 * 限定查询1天数据，允许设置的最大值为昨日,格式为yyyymmdd！
-	 * @param  string $accessToken
-	 * @param  string $begin
-	 * @param  string $end
-	 * @return [array]
-	 */
+    /**
+     * 获取用户访问小程序日留存 post
+     * 限定查询1天数据，允许设置的最大值为昨日,格式为yyyymmdd！
+     * @param string $accessToken
+     * @param string $begin
+     * @param string $end
+     * @return mixed
+     */
 	public function getDailyRetain(string $accessToken, string $begin, string $end)
 	{
 		try {
@@ -134,15 +135,15 @@ class WxWeApp
 			exit($e->getMessage());
 		}
 	}
-	
-	/**
-	 * 获取用户访问小程序月留存 post
-	 * 开始日期为自然月第一天，结束日期，为自然月最后一天，限定查询一个月数据，格式为yyyymmdd
-	 * @param  string $accessToken
-	 * @param  string $begin
-	 * @param  string $end
-	 * @return [array]
-	 */
+
+    /**
+     * 获取用户访问小程序月留存 post
+     * 开始日期为自然月第一天，结束日期，为自然月最后一天，限定查询一个月数据，格式为yyyymmdd
+     * @param string $accessToken
+     * @param string $begin
+     * @param string $end
+     * @return mixed
+     */
 	public function getMonthlyRetain(string $accessToken, string $begin, string $end)
 	{
 		try {
@@ -162,14 +163,14 @@ class WxWeApp
 		}
 	}
 
-	/**
-	 * 获取用户访问小程序周留存 post
-	 * 开始日期为周一日期，结束日期，为周日日期，限定查询一周数据，格式为yyyymmdd
-	 * @param  string $accessToken
-	 * @param  string $begin
-	 * @param  string $end
-	 * @return [array]
-	 */
+    /**
+     * 获取用户访问小程序周留存 post
+     * 开始日期为周一日期，结束日期，为周日日期，限定查询一周数据，格式为yyyymmdd
+     * @param string $accessToken
+     * @param string $begin
+     * @param string $end
+     * @return mixed
+     */
 	public function getWeeklyRetain(string $accessToken, string $begin, string $end)
 	{
 		try {
@@ -189,14 +190,14 @@ class WxWeApp
 		}
 	}
 
-	/**
-	 * 获取用户访问小程序数据概况 post
-	 * 限定查询1天数据，允许设置的最大值为昨日。格式为yyyymmdd
-	 * @param  string $accessToken
-	 * @param  string $begin
-	 * @param  string $end
-	 * @return [array]
-	 */
+    /**
+     * 获取用户访问小程序数据概况 post
+     * 限定查询1天数据，允许设置的最大值为昨日。格式为yyyymmdd
+     * @param string $accessToken
+     * @param string $begin
+     * @param string $end
+     * @return mixed
+     */
 	public function getDailySummary(string $accessToken, string $begin, string $end)
 	{
 		try {
@@ -216,12 +217,12 @@ class WxWeApp
 		}
 	}
 
-	/**
-	 * 获取客服消息内的临时素材。即下载临时的多媒体文件。目前仅支持下载图片文件。
-	 * @param  string $accessToken
-	 * @param  string $mediaId
-	 * @return [array|buffer]
-	 */
+    /**
+     * 获取客服消息内的临时素材。即下载临时的多媒体文件。目前仅支持下载图片文件。
+     * @param string $accessToken
+     * @param string $mediaId
+     * @return bool|mixed|string
+     */
 	public function getTempMedia(string $accessToken, string $mediaId)
 	{
 		try {
@@ -241,13 +242,13 @@ class WxWeApp
 			exit($e->getMessage());
 		}
 	}
-	
-	/**
-	 * 发送客服消息给用户。
-	 * @param  string $accessToken
-	 * @param  array  $msg 该参数结果请移步微信文档
-	 * @return [array]
-	 */
+
+    /**
+     * 发送客服消息给用户。
+     * @param string $accessToken
+     * @param array $msg
+     * @return mixed
+     */
 	public function serviceMsgSend(string $accessToken, array $msg)
 	{
 		try {
@@ -264,14 +265,14 @@ class WxWeApp
 		}
 	}
 
-	/**
-	 * 下发客服当前输入状态给用户
-	 * 对用户下发|取消"正在输入"状态
-	 * @param string $accessToken
-	 * @param string $openId
-	 * @param bool   $isTying
-	 * @return [array]
-	 */
+    /**
+     * 下发客服当前输入状态给用户
+     * 对用户下发|取消"正在输入"状态
+     * @param string $accessToken
+     * @param string $openId
+     * @param bool $isTying
+     * @return mixed
+     */
 	public function setTyping(string $accessToken, string $openId, bool $isTying)
 	{
 		try {
