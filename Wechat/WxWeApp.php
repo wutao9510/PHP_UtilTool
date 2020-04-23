@@ -189,4 +189,109 @@ class WxWeApp
 		}
 	}
 
+	/**
+	 * 获取用户访问小程序数据概况 post
+	 * 限定查询1天数据，允许设置的最大值为昨日。格式为yyyymmdd
+	 * @param  string $accessToken
+	 * @param  string $begin
+	 * @param  string $end
+	 * @return [array]
+	 */
+	public function getDailySummary(string $accessToken, string $begin, string $end)
+	{
+		try {
+			if (empty($accessToken)) {
+				throw new \Exception("请传入access_token！", 1);
+			}
+			if ($begin != $end || strtotime($begin) > time()) {
+				throw new \Exception("限定查询1天数据，允许设置的最大值为昨日,格式为yyyymmdd！", 1);
+			}
+			$result = Curl::instance()->postRawData($this->wxApiUrl . '/datacube/getweanalysisappiddailysummarytrend?access_token=' . $accessToken, [
+				'begin_date'=> $begin,
+				'end_date'=> $end,
+			]);
+			return json_decode($result, true);
+		} catch (\Exception $e) {
+			exit($e->getMessage());
+		}
+	}
+
+	/**
+	 * 获取客服消息内的临时素材。即下载临时的多媒体文件。目前仅支持下载图片文件。
+	 * @param  string $accessToken
+	 * @param  string $mediaId
+	 * @return [array|buffer]
+	 */
+	public function getTempMedia(string $accessToken, string $mediaId)
+	{
+		try {
+			if (empty($accessToken)) {
+				throw new \Exception("请传入access_token！", 1);
+			}
+			$result = Curl::instance()->get($this->wxApiUrl . '/cgi-bin/media/get', [
+				'access_token'=> $accessToken,
+				'media_id'=> $mediaId
+			]);
+			if (is_array(json_decode($result, true))) {
+				return json_decode($result, true);
+			}else{
+				return $result;
+			}
+		} catch (\Exception $e) {
+			exit($e->getMessage());
+		}
+	}
+	
+	/**
+	 * 发送客服消息给用户。
+	 * @param  string $accessToken
+	 * @param  array  $msg 该参数结果请移步微信文档
+	 * @return [array]
+	 */
+	public function serviceMsgSend(string $accessToken, array $msg)
+	{
+		try {
+			if (empty($accessToken)) {
+				throw new \Exception("请传入access_token！", 1);
+			}
+			if (empty($msg)) {
+				throw new \Exception("限定查询1天数据，允许设置的最大值为昨日,格式为yyyymmdd！", 1);
+			}
+			$result = Curl::instance()->postRawData($this->wxApiUrl . '/cgi-bin/message/custom/send?access_token=' . $accessToken, $msg);
+			return json_decode($result, true);
+		} catch (\Exception $e) {
+			exit($e->getMessage());
+		}
+	}
+
+	/**
+	 * 下发客服当前输入状态给用户
+	 * 对用户下发|取消"正在输入"状态
+	 * @param string $accessToken
+	 * @param string $openId
+	 * @param bool   $isTying
+	 * @return [array]
+	 */
+	public function setTyping(string $accessToken, string $openId, bool $isTying)
+	{
+		try {
+			if (empty($accessToken)) {
+				throw new \Exception("请传入access_token！", 1);
+			}
+			$result = Curl::instance()->postRawData($this->wxApiUrl . '/cgi-bin/message/custom/typing?access_token=' . $accessToken, [
+				'touser'=> $openId,
+				'command'=> $isTying ? 'Typing' : 'CancelTyping'
+			]);
+			return json_decode($result, true);
+		} catch (\Exception $e) {
+			exit($e->getMessage());
+		}
+	}
+
+	public function uploadTempMedia()
+	{
+		# code...
+	}
+
+
 }
