@@ -1,5 +1,5 @@
 <?php
-require_once 'AutoLoder.php';
+require_once 'AutoLoader.php';
 
 use Chenmu\Sys\Xml;
 
@@ -14,3 +14,14 @@ $xml = Xml::instance();
 
 // echo  __DIR__ . DIRECTORY_SEPARATOR;
 
+// echo strtotime('20200423');
+// echo "\n";
+echo (int)date('w');
+exit;
+try {
+	throw new Exception("Error test 1012999");
+	echo "string";
+	
+} catch (\Exception $e) {
+	echo $e->getMessage();
+}

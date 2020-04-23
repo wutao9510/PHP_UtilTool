@@ -1,6 +1,8 @@
 <?php 
 namespace Chenmu\Wechat;
 
+use Chenmu\Sys\Curl;
+
 /**
  * 小程序服务端类
  * wx weapp
@@ -47,13 +49,11 @@ class WxWeApp
 	 */
 	public function login(string $jsCode)
 	{
-		if (empty($jsCode)) {
-			exit('请传入jscode！');
-		}
 		try {
-			require 'Curl.php';
-			$curl = Curl::instance();
-			$result = $curl->get($this->wxApiUrl . '/sns/jscode2session', [
+			if (empty($jsCode)) {
+				throw new \Exception("请传入jscode！", 1);
+			}
+			$result = Curl::instance()->get($this->wxApiUrl . '/sns/jscode2session', [
 				'appid'=> $this->wxConfig['app_id'],
 				'secret'=> $this->wxConfig['app_secret'],
 				'js_code'=> trim($jsCode),
@@ -72,9 +72,7 @@ class WxWeApp
 	public function getAccessToken()
 	{
 		try {
-			require 'Curl.php';
-			$curl = Curl::instance();
-			$result = $curl->get($this->wxApiUrl . '/cgi-bin/token', [
+			$result = Curl::instance()->get($this->wxApiUrl . '/cgi-bin/token', [
 				'grant_type'=> 'client_credential',
 				'appid'=> $this->wxConfig['app_id'],
 				'secret'=> $this->wxConfig['app_secret']
@@ -88,19 +86,75 @@ class WxWeApp
 	/**
 	 * 用户支付完成后，获取该用户的UnionId，无需用户授权
 	 * 注意：调用前需要用户完成支付，且在支付后的五分钟内有效
-	 * @param string $value [description]
+	 * @param  string $accessToken
+	 * @param  string $openId
+	 * @param  array  $orderInfo
+	 * @return [array]
 	 */
-	public function getPaidUnionId(string $accessToken, string $openId, string $transactionId = '', string $outTradeNo = '')
+	public function getPaidUnionId(string $accessToken, string $openId, array $orderInfo = [])
 	{
-		if (empty($accessToken)) {
-			exit('请传入access_token！');
-		}
 		try {
-			require 'Curl.php';
-			$curl = Curl::instance();
-			$result = $curl->get($this->wxApiUrl . '/wxa/getpaidunionid', [
+			if (empty($accessToken)) {
+				throw new \Exception("请传入access_token！", 1);
+			}
+			$param = array_merge([
 				'access_token' => trim($accessToken),
 				'openid' => $openId
+			], $orderInfo);
+			$result = Curl::instance()->get($this->wxApiUrl . '/wxa/getpaidunionid', $param);
+			return json_decode($result, true);
+		} catch (\Exception $e) {
+			exit($e->getMessage());
+		}
+	}
+
+	/**
+	 * 获取用户访问小程序日留存 post
+	 * 限定查询1天数据，允许设置的最大值为昨日,格式为yyyymmdd！
+	 * @param  string $accessToken
+	 * @param  string $begin
+	 * @param  string $end
+	 * @return [array]
+	 */
+	public function getDailyRetain(string $accessToken, string $begin, string $end)
+	{
+		try {
+			if (empty($accessToken)) {
+				throw new \Exception("请传入access_token！", 1);
+			}
+			if ($begin != $end || strtotime($begin) > time()) {
+				throw new \Exception("限定查询1天数据，允许设置的最大值为昨日,格式为yyyymmdd！", 1);
+			}
+			$result = Curl::instance()->postRawData($this->wxApiUrl . '/datacube/getweanalysisappiddailyretaininfo?access_token=' . $accessToken, [
+				'begin_date'=> $begin,
+				'end_date'=> $end
+			]);
+			return json_decode($result, true);
+		} catch (\Exception $e) {
+			exit($e->getMessage());
+		}
+	}
+	
+	/**
+	 * 获取用户访问小程序月留存 post
+	 * 开始日期为自然月第一天，结束日期，为自然月最后一天，限定查询一个月数据，格式为yyyymmdd
+	 * @param  string $accessToken
+	 * @param  string $begin
+	 * @param  string $end
+	 * @return [array]
+	 */
+	public function getMonthlyRetain(string $accessToken, string $begin, string $end)
+	{
+		try {
+			if (empty($accessToken)) {
+				throw new \Exception("请传入access_token！", 1);
+			}
+			if ((int)date('m', strtotime($begin)) > (int)date('m') || (int)date('d', strtotime($begin) != 1)) {
+				throw new \Exception("开始日期为自然月第一天，格式为yyyymmdd！", 1);
+			}
+			$result = Curl::instance()->postRawData($this->wxApiUrl . '/datacube/getweanalysisappidmonthlyretaininfo?access_token=' . $accessToken, [
+				'begin_date'=> $begin,
+				'end_date'=> $end
 			]);
 			return json_decode($result, true);
 		} catch (\Exception $e) {
@@ -108,8 +162,31 @@ class WxWeApp
 		}
 	}
 
-	public function getDailyRetain($value='')
+	/**
+	 * 获取用户访问小程序周留存 post
+	 * 开始日期为周一日期，结束日期，为周日日期，限定查询一周数据，格式为yyyymmdd
+	 * @param  string $accessToken
+	 * @param  string $begin
+	 * @param  string $end
+	 * @return [array]
+	 */
+	public function getWeeklyRetain(string $accessToken, string $begin, string $end)
 	{
-		# code...
+		try {
+			if (empty($accessToken)) {
+				throw new \Exception("请传入access_token！", 1);
+			}
+			if (date('w', strtotime($begin)) != 1 || date('w', strtotime($end) != 0)) {
+				throw new \Exception("开始日期为周一日期，结束日期，为周日日期，限定查询一周数据，格式为yyyymmdd！", 1);
+			}
+			$result = Curl::instance()->postRawData($this->wxApiUrl . '/datacube/getweanalysisappidweeklyretaininfo?access_token=' . $accessToken, [
+				'begin_date'=> $begin,
+				'end_date'=> $end,
+			]);
+			return json_decode($result, true);
+		} catch (\Exception $e) {
+			exit($e->getMessage());
+		}
 	}
+
 }

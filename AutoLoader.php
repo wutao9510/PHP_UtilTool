@@ -12,7 +12,7 @@ class AutoLoader
 
 	/**
 	 * 命名空间与路径
-	 * @var [type]
+	 * @var array
 	 */
 	protected static $vndorMap = [
 		'Chenmu' => __DIR__ . DIRECTORY_SEPARATOR
@@ -26,7 +26,7 @@ class AutoLoader
 	public static function autoload(string $class)
 	{
 		$top = substr($class, 0, strpos($class, "\\"));
-		$topDir = self::$mvcMap[$top];
+		$topDir = self::$vndorMap[$top];
 		$path = substr($class, strlen($top)) . '.php';
 		$file = strtr($topDir . $path, '\\', DIRECTORY_SEPARATOR);
 		if (file_exists($file) && is_file($file)) {
