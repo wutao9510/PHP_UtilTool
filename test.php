@@ -3,7 +3,7 @@ require_once 'AutoLoder.php';
 
 use Chenmu\Sys\Xml;
 
-// $xml = Xml::instance();
+$xml = Xml::instance();
 
 // $xml->createSimpleXml([
 // 	['attribute'=>['id'=>1,'class'=>'ds'],'staff'=>['name'=>'alice','age'=>20,'sex'=>1]],
