@@ -1,7 +1,8 @@
 <?php
+namespace Chenmu\Sys;
 
 /**
- * Curl 类（单例）
+ * Curl类(单例)
  */
 class Curl
 {

@@ -1,5 +1,9 @@
 <?php
+namespace Chenmu\Sys;
 
+/**
+ * xml读写类(单例)
+ */
 class Xml
 {
     /**

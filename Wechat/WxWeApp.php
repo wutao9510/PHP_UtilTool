@@ -1,7 +1,9 @@
 <?php 
+namespace Chenmu\Wechat;
 
 /**
- * 
+ * 小程序服务端类
+ * wx weapp
  */
 class WxWeApp
 {
@@ -88,7 +90,7 @@ class WxWeApp
 	 * 注意：调用前需要用户完成支付，且在支付后的五分钟内有效
 	 * @param string $value [description]
 	 */
-	public function FunctionName(string $accessToken, string $openId, string $transactionId = '', string $outTradeNo = '')
+	public function getPaidUnionId(string $accessToken, string $openId, string $transactionId = '', string $outTradeNo = '')
 	{
 		if (empty($accessToken)) {
 			exit('请传入access_token！');
@@ -104,5 +106,10 @@ class WxWeApp
 		} catch (\Exception $e) {
 			exit($e->getMessage());
 		}
+	}
+
+	public function getDailyRetain($value='')
+	{
+		# code...
 	}
 }
