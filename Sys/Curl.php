@@ -82,7 +82,7 @@ class Curl
     /**
      * post源数据请求
      */
-    public function postRawData(string $url, array $data = [])
+    public function postRawData(string $url, $data = [])
     {
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_HEADER , false);
@@ -108,23 +108,24 @@ class Curl
     /**
      * 发送需要使用证书的post请求
      */
-    public function postSslVerify(string $url, array $data, string $certPath, string $keyPath)
+    public function postSslVerify(string $url, $data, string $certPath = '', string $keyPath = '')
     {
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_SSLCERTTYPE, 'PEM');
         curl_setopt($ch, CURLOPT_SSLKEYTYPE, 'PEM');
-        curl_setopt($ch, CURLOPT_SSLCERT, $certPath);
         curl_setopt($ch, CURLOPT_SSLKEY, $keyPath);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
+        if ($certPath && $keyPath) {
+            curl_setopt($ch, CURLOPT_SSLCERT, $certPath);
+            curl_setopt($ch, CURLOPT_SSLCERT, $keyPath);
+        }
         if (1 == strpos('$'.$url, 'https://')) {
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         }
-        if (!empty($data)) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        }
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         $result = curl_exec($ch);
         curl_close($ch);
         return $result;

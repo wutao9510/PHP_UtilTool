@@ -14,7 +14,7 @@ class WxWeApp
 
 	private $wxConfig = [];
 
-	protected $wxApiUrl = 'https://api.weixin.qq.com';
+	protected static $wxApiUrl = 'https://api.weixin.qq.com';
 
 	private function __clone(){}
 
@@ -54,7 +54,7 @@ class WxWeApp
 			if (empty($jsCode)) {
 				throw new \Exception("请传入jscode！", 1);
 			}
-			$result = Curl::instance()->get($this->wxApiUrl . '/sns/jscode2session', [
+			$result = Curl::instance()->get(self::$wxApiUrl.'/sns/jscode2session', [
 				'appid'=> $this->wxConfig['app_id'],
 				'secret'=> $this->wxConfig['app_secret'],
 				'js_code'=> trim($jsCode),
@@ -73,7 +73,7 @@ class WxWeApp
 	public function getAccessToken()
 	{
 		try {
-			$result = Curl::instance()->get($this->wxApiUrl . '/cgi-bin/token', [
+			$result = Curl::instance()->get(self::$wxApiUrl.'/cgi-bin/token', [
 				'grant_type'=> 'client_credential',
 				'appid'=> $this->wxConfig['app_id'],
 				'secret'=> $this->wxConfig['app_secret']
@@ -102,7 +102,7 @@ class WxWeApp
 				'access_token' => trim($accessToken),
 				'openid' => $openId
 			], $orderInfo);
-			$result = Curl::instance()->get($this->wxApiUrl . '/wxa/getpaidunionid', $param);
+			$result = Curl::instance()->get(self::$wxApiUrl.'/wxa/getpaidunionid', $param);
 			return json_decode($result, true);
 		} catch (\Exception $e) {
 			exit($e->getMessage());
@@ -126,7 +126,7 @@ class WxWeApp
 			if ($begin != $end || strtotime($begin) > time()) {
 				throw new \Exception("限定查询1天数据，允许设置的最大值为昨日,格式为yyyymmdd！", 1);
 			}
-			$result = Curl::instance()->postRawData($this->wxApiUrl . '/datacube/getweanalysisappiddailyretaininfo?access_token=' . $accessToken, [
+			$result = Curl::instance()->postRawData(self::$wxApiUrl.'/datacube/getweanalysisappiddailyretaininfo?access_token='.$accessToken, [
 				'begin_date'=> $begin,
 				'end_date'=> $end
 			]);
@@ -153,7 +153,7 @@ class WxWeApp
 			if ((int)date('m', strtotime($begin)) > (int)date('m') || (int)date('d', strtotime($begin) != 1)) {
 				throw new \Exception("开始日期为自然月第一天，格式为yyyymmdd！", 1);
 			}
-			$result = Curl::instance()->postRawData($this->wxApiUrl . '/datacube/getweanalysisappidmonthlyretaininfo?access_token=' . $accessToken, [
+			$result = Curl::instance()->postRawData(self::$wxApiUrl.'/datacube/getweanalysisappidmonthlyretaininfo?access_token='.$accessToken, [
 				'begin_date'=> $begin,
 				'end_date'=> $end
 			]);
@@ -180,9 +180,9 @@ class WxWeApp
 			if (date('w', strtotime($begin)) != 1 || date('w', strtotime($end) != 0)) {
 				throw new \Exception("开始日期为周一日期，结束日期，为周日日期，限定查询一周数据，格式为yyyymmdd！", 1);
 			}
-			$result = Curl::instance()->postRawData($this->wxApiUrl . '/datacube/getweanalysisappidweeklyretaininfo?access_token=' . $accessToken, [
+			$result = Curl::instance()->postRawData(self::$wxApiUrl.'/datacube/getweanalysisappidweeklyretaininfo?access_token='.$accessToken, [
 				'begin_date'=> $begin,
-				'end_date'=> $end,
+				'end_date'=> $end
 			]);
 			return json_decode($result, true);
 		} catch (\Exception $e) {
@@ -207,9 +207,9 @@ class WxWeApp
 			if ($begin != $end || strtotime($begin) > time()) {
 				throw new \Exception("限定查询1天数据，允许设置的最大值为昨日,格式为yyyymmdd！", 1);
 			}
-			$result = Curl::instance()->postRawData($this->wxApiUrl . '/datacube/getweanalysisappiddailysummarytrend?access_token=' . $accessToken, [
+			$result = Curl::instance()->postRawData(self::$wxApiUrl.'/datacube/getweanalysisappiddailysummarytrend?access_token='.$accessToken, [
 				'begin_date'=> $begin,
-				'end_date'=> $end,
+				'end_date'=> $end
 			]);
 			return json_decode($result, true);
 		} catch (\Exception $e) {
@@ -229,7 +229,7 @@ class WxWeApp
 			if (empty($accessToken)) {
 				throw new \Exception("请传入access_token！", 1);
 			}
-			$result = Curl::instance()->get($this->wxApiUrl . '/cgi-bin/media/get', [
+			$result = Curl::instance()->get(self::$wxApiUrl.'/cgi-bin/media/get', [
 				'access_token'=> $accessToken,
 				'media_id'=> $mediaId
 			]);
@@ -258,7 +258,7 @@ class WxWeApp
 			if (empty($msg)) {
 				throw new \Exception("限定查询1天数据，允许设置的最大值为昨日,格式为yyyymmdd！", 1);
 			}
-			$result = Curl::instance()->postRawData($this->wxApiUrl . '/cgi-bin/message/custom/send?access_token=' . $accessToken, $msg);
+			$result = Curl::instance()->postRawData(self::$wxApiUrl.'/cgi-bin/message/custom/send?access_token='.$accessToken, $msg);
 			return json_decode($result, true);
 		} catch (\Exception $e) {
 			exit($e->getMessage());
@@ -279,7 +279,7 @@ class WxWeApp
 			if (empty($accessToken)) {
 				throw new \Exception("请传入access_token！", 1);
 			}
-			$result = Curl::instance()->postRawData($this->wxApiUrl . '/cgi-bin/message/custom/typing?access_token=' . $accessToken, [
+			$result = Curl::instance()->postRawData(self::$wxApiUrl.'/cgi-bin/message/custom/typing?access_token='.$accessToken, [
 				'touser'=> $openId,
 				'command'=> $isTying ? 'Typing' : 'CancelTyping'
 			]);

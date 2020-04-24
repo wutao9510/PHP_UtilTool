@@ -42,7 +42,7 @@ class Xml
         if (empty($savePath)) {
             exit('保存路径不能为空！');
         }
-        $xmlObj = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?><'.$rootName.' />');
+        $xmlObj = new \SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?><'.$rootName.' />');
 
         foreach ($data as $item) {
             if (count($item) > 2) {
@@ -74,10 +74,36 @@ class Xml
      */
     public function readXmlString(string $xmlString)
     {
-        if (!file_exists($filePath)) {
-            exit('为输入xml串！');
+        if (!empty($xmlString)) {
+            exit('未输入xml串！');
         }
-        return simplexml_load_string($xmlString);
+        return simplexml_load_string($xmlString, 'SimpleXMLElement', LIBXML_NOCDATA);
+    }
+
+    /**
+     * 数组通过字符串拼接成xml
+     */
+    public function array2xml(array $arr)
+    {
+        $xmlString = '<xml>';
+        $xmlString .= $this->loopConnectXml($xmlString, $arr);
+        $xmlString .= '</xml>';
+        return $xmlString;
+    }
+
+    /**
+     * 递归拼接xml
+     */
+    protected function loopConnectXml(string &$xml, array $data)
+    {
+        if($data){
+            foreach ($data as $key => $value) {
+                $xml .= '<'.$key.'>';
+                $xml .= is_array($value) ? $this->loopConnectXml($xml, $value) : $value;
+                $xml .= '</'.$key.'>';
+            }
+        }
+        return $xml;
     }
 
     /**

@@ -16,12 +16,14 @@ $xml = Xml::instance();
 
 // echo strtotime('20200423');
 // echo "\n";
-echo (int)date('w');
-exit;
-try {
-	throw new Exception("Error test 1012999");
-	echo "string";
-	
-} catch (\Exception $e) {
-	echo $e->getMessage();
+class a{
+	const SD = 'sd';
 }
+class b extends a{
+	public static function get()
+	{
+		echo self::SD;
+	}
+}
+
+b::get();
