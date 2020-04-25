@@ -29,6 +29,11 @@ class WxPay
 
     /**
      * 单例出口
+     * @param string $appId
+     * @param string $mchId
+     * @param string $mchKey
+     * @param array $certPath
+     * @return WxPay|null
      */
     public static function instance(string $appId, string $mchId, string $mchKey, array $certPath = [])
     {
@@ -94,8 +99,8 @@ class WxPay
 
     /**
      * 查询订单
-     * @param  array $orderId transaction_id和out_trade_no二选一,格式:['transaction_id'=>123456789]或者['out_trade_no'=>123456789]
-     * @return [type]
+     * @param array $orderId transaction_id和out_trade_no二选一,格式:['transaction_id'=>123456789]或者['out_trade_no'=>123456789]
+     * @return array
      */
     public function orderQuery(array $orderId = [])
     {
@@ -131,6 +136,9 @@ class WxPay
 
     /**
      * 创建随机字符串
+     * @param int $length
+     * @param bool $isUpper
+     * @return string
      */
     protected function createNonceStr(int $length = 32, bool $isUpper = false) : string
     {
@@ -152,6 +160,8 @@ class WxPay
 
     /**
      * 校验签名
+     * @param $returnRes
+     * @return bool
      */
     protected function checkSignature($returnRes)
     {
@@ -162,6 +172,8 @@ class WxPay
 
     /**
      * 计算sign
+     * @param array $params
+     * @return string
      */
     protected function getSign(array $params) : string
     {
