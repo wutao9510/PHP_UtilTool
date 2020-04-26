@@ -1,7 +1,7 @@
 <?php
 namespace Chenmu\Wechat;
 
-class WxPayEnum
+class WxpayEnum
 {
     private function __construct(){}
 

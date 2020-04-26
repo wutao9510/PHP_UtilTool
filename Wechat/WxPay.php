@@ -4,7 +4,7 @@ namespace Chenmu\Wechat;
 use Chenmu\Sys\Curl;
 use Chenmu\Sys\Xml;
 
-class WxPay
+class Wxpay
 {
     private static $instance = null;
 
@@ -27,7 +27,7 @@ class WxPay
      * @param string $mchId
      * @param string $mchKey
      * @param array $certPath
-     * @return WxPay|null
+     * @return Wxpay|null
      */
     public static function instance(string $appId, string $mchId, string $mchKey)
     {
