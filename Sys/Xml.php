@@ -57,7 +57,7 @@ class Xml
     /**
      * 读取xml文件
      * @param  string
-     * @return [object]
+     * @return object
      */
     public function readXmlFile(string $filePath)
     {
@@ -70,7 +70,7 @@ class Xml
     /**
      * 读取xml字符串
      * @param  string
-     * @return [object]
+     * @return object
      */
     public function readXmlString(string $xmlString)
     {
@@ -81,9 +81,24 @@ class Xml
     }
 
     /**
+     * xml转array
+     * @param  string       $xml
+     * @param  bool|boolean $stringOrFile
+     * @return array
+     */
+    public function xmlToArray(string $xml, bool $stringOrFile = true): array
+    {
+        if (empty($xml)) {
+            exit('请输入xml文件或字符！');
+        }
+        $result = $stringOrFile ? $this->readXmlString($xml) : $this->readXmlFile($xml);
+        return json_decode(json_encode($result), true);
+    }
+
+    /**
      * 数组通过字符串拼接成xml
      */
-    public function array2xml(array $arr)
+    public function array2xml(array $arr): string
     {
         $xmlString = '<xml>';
         $xmlString .= $this->loopConnectXml($xmlString, $arr);
@@ -93,8 +108,11 @@ class Xml
 
     /**
      * 递归拼接xml
+     * @param  string &$xml
+     * @param  array  $data
+     * @return string
      */
-    protected function loopConnectXml(string &$xml, array $data)
+    protected function loopConnectXml(string &$xml, array $data): string
     {
         if($data){
             foreach ($data as $key => $value) {

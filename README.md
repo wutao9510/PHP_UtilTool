@@ -1,2 +1,2 @@
 # utilTool
-using ofently!
+Using Ofently!
