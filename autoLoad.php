@@ -4,7 +4,7 @@
  * class auto load
  * PSR-4规范
  */
-class AutoLoader
+final class AutoLoader
 {
 	private function __construct(){}
 
@@ -20,18 +20,20 @@ class AutoLoader
 
 	/**
 	 * 自动加载类
-	 * @param  [string] $class 调用的类
-	 * @return [void]
+	 * @param  string $class 调用的类
+	 * @return bool
 	 */
-	public static function autoload(string $class)
+	public static function autoload(string $class): bool
 	{
 		$top = substr($class, 0, strpos($class, "\\"));
 		$topDir = self::$vndorMap[$top];
 		$path = substr($class, strlen($top)) . '.php';
 		$file = strtr($topDir . $path, '\\', DIRECTORY_SEPARATOR);
-		if (file_exists($file) && is_file($file)) {
+		if (file_exists($file) && is_readable($file)) {
 			require_once $file;
+			return true;
 		}
+		return false;
 	}
 }
 spl_autoload_register('AutoLoader::autoload');
