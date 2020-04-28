@@ -45,7 +45,8 @@ class PayForDirect extends AlipayClient
         if (empty($outTradeNo) || empty($subject) || empty($totalFee) || empty($sellerId)) {
             throw new \Exception('业务参数不完整！');
         }
-        $reqParams['service'] = $this->service;;
+        $reqParams['service'] = $this->service;
+        $reqParams['payment_type'] = $this->paymentType;
         $reqParams['partner'] = trim($outTradeNo);
         $reqParams['_input_charset'] = trim($outTradeNo);
         $reqParams['sign_type'] = $this->signType;
