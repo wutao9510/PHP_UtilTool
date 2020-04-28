@@ -1,9 +1,9 @@
 <?php
 require_once 'autoload.php';
 
-use Chenmu\Sys\Xml;
+use Chenmu\Sys\{Xml, Log};
 
-$xml = Xml::instance();
+// $xml = Xml::instance();
 
 // $xml->createSimpleXml([
 // 	['attribute'=>['id'=>1,'class'=>'ds'],'staff'=>['name'=>'alice','age'=>20,'sex'=>1]],
@@ -11,6 +11,7 @@ $xml = Xml::instance();
 // 	['attribute'=>['id'=>3,'class'=>'dfs'],'staff'=>['name'=>'tomson','age'=>22,'sex'=>1, 'person'=>['habit'=>'bascketball','music'=>'piters','side'=>'tall']]]
 // ],'man.xml','list');
 
+Log::instance()->write('test write!');
 
 // echo  __DIR__ . DIRECTORY_SEPARATOR;
 
@@ -25,5 +26,3 @@ class b extends a{
 		echo self::SD;
 	}
 }
-
-b::get();
