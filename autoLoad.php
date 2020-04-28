@@ -1,4 +1,5 @@
 <?php 
+define('S_ROOT_DIR', __DIR__ . DIRECTORY_SEPARATOR);
 
 /**
  * class auto load

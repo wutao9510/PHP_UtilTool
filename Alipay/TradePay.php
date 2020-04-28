@@ -1,6 +1,8 @@
 <?php
 namespace Chenmu\Alipay;
 
+use Chenmu\Sys\Curl;
+
 /**
  * 支付宝统一下单接口(alipay.trade.pay)
  */
@@ -36,13 +38,12 @@ class TradePay extends AlipayClient
 
     public function execute(string $prodCode, $appInfoAuthtoken = null)
     {
+        if (empty($prodCode)) {
+			throw new \Exception('缺少销售产品码!');
+        }
 		# 如果两者编码不一致，会出现签名验签或者乱码
 		if (strcasecmp($this->fileCharset, $this->postCharset) !== 0) {
 			throw new \Exception('文件编码：['.$this->fileCharset.'] 与表单提交编码：['.$this->postCharset .']两者不一致!');
-        }
-
-        if (empty($prodCode)) {
-			throw new \Exception('缺少销售产品码!');
         }
 
         # 组装数据
@@ -63,12 +64,26 @@ class TradePay extends AlipayClient
 
         # if need to encrypt
         if ($this->needEncrypt) {
-            # code...
+            #
         }
 
-        # sign
-        $a = array_merge($sysData, ['biz_content' => $this->bizContent]);
-        $sysData['sign'] = $this->getSign($a, $this->signType);
+        # 签名
+        $data = array_merge($sysData, ['biz_content' => $this->bizContent]);
+        $sysData['sign'] = $this->getSign($data, $this->signType);
+
+        # 公共参数拼入get参数
+        $urlString = self::$alipyGateway.'?';
+        foreach ($sysData as $key => $value) {
+            $urlString .= $key.'='.urlencode($value).'&';
+        }
+        $urlString = substr($urlString, 0, -1);
+
+        # 发送curl请求
+        try {
+            $result = Curl::instance()->postRawData($urlString, ['biz_content' => $this->bizContent]);
+        } catch (\Exception $e) {
+            exit($e->getMessage());
+        }
 
     }
 

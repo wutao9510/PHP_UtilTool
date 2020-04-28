@@ -71,8 +71,21 @@ abstract class AlipayClient
         return $this->version;
     }
 
-    public function getSign(array $params, string $signType = 'RSA2')
+    protected function getSign(array $params, string $signType = 'RSA2')
     {
+        if(empty($params)){
+            throw new \Exception('签名参数为空！');
+        }
+        # 排字典序
+        ksort($params);
+
+        $str = '';
+        foreach ($params as $k => $v) {
+            $str .= $k.'='.$v.'&';
+        }
+        unset($k, $v);
+        $str = rtrim($str, '&');
+
         if (!is_null($this->rsaPrivateKey)){
             $priKey = "-----BEGIN RSA2 PRIVATE KEY-----\n".wordwrap($this->rsaPrivateKey, 64, "\n", true)."\n-----END RSA2 PRIVATE KEY-----";
         }else {
@@ -81,16 +94,21 @@ abstract class AlipayClient
         }
         ($priKey) or exit('的私钥格式错误，请检查RSA私钥配置');
         if ('RSA2' == $signType) {
-            openssl_sign($params, $sign, $priKey, OPENSSL_ALGO_SHA256);
+            openssl_sign($str, $sign, $priKey, OPENSSL_ALGO_SHA256);
         } else {
-            openssl_sign($params, $sign, $priKey, OPENSSL_ALGO_SHA256);
+            openssl_sign($str, $sign, $priKey);
         }
         
         if (is_file($this->rsaPrivateKeyPath)) {
             openssl_free_key($priKey);
         }
-        $sign = base64_encode($sign);
-		return $sign;
+        return base64_encode($sign);
     }
+
+    protected function checkSign()
+    {
+        # code...
+    }
+    
 
 }
