@@ -3,112 +3,155 @@ namespace Chenmu\Alipay;
 
 abstract class AlipayClient
 {
-    # 支付宝网关
-    public static $alipyGateway = 'https://openapi.alipay.com/gateway.do';
-
-    # 应用ID
-    protected $appid = null;
-
-    # 接口名称
-    public $method = null;
-
-    # 仅支持JSON
-    public $format = 'JSON';
-
-    # 表单提交字符集请求使用的编码格式，如utf-8,gbk,gb2312
-    public $postCharset	 = 'utf-8';
-
-    # 文件编码格式
-    public $fileCharset	 = 'utf-8';
-
-    # 商户生成签名字符串所使用的签名算法类型，目前支持RSA2和RSA，推荐使用RSA2
-    public $signType = 'RSA2';
-
-    # 商户请求参数的签名串
-    public $sign = null;
-
-    # 调用的接口版本，固定为1.0
-    protected $version = '1.0';
-
-    # 支付宝服务器主动通知商户服务器里指定的页面http/https路径
-    public $notifyUrl = null;
-
-    # 第三方应用授权，详见(文档)应用授权概述
-    public $appAuthToken = null;
-
-    # 请求参数的集合，最大长度不限，除公共参数外所有请求参数都必须放在这个参数中传递，具体参照文档
-    public $bizContent = null;
+    # 网关
+    public static $gateway = 'https://mapi.alipay.com/gateway.do';
 
     # 商户私钥
-    protected $rsaPrivateKey = null;
+    protected $privateKey = null;
 
-    # 商户私钥文件
-    protected $rsaPrivateKeyPath = null;
+    # 合作者身份ID (PID)
+    protected $partner = null;
 
-    # 支付宝公钥
-    protected $alipayrsaPublicKey = null;
+    # 参数编码字符集，商户网站使用的编码格式，仅支持UTF-8
+    protected $inputCharset = 'UTF-8';
+
+    # 签名方式，DSA、RSA、MD5三个值可选，必须大写
+    protected $signType = null;
+
+    # 签名
+    protected $sign = null;
+
+    # 服务器异步通知页面路径
+    protected $notifyUrl = null;
+
+    # 页面跳转同步通知页面路径
+    protected $returnUrl = null;
 
     /**
-     * 设置公共参数
-     * @param array $parms
+     * 设置基本参数
+     * @param array $params
      */
-    abstract public function setCommonParams(array $parms);
-
-    abstract public function setSign();
-
-    abstract public function setAppAuthToken();
-
-    abstract public function setBizContent(array $parms);
-
-    public function setVersion(string $iv)
+    public function setBasicParams(array $params)
     {
-        $this->version = trim($iv);
-        return true;
-    }
-
-    public function getVersion()
-    {
-        return $this->version;
-    }
-
-    protected function getSign(array $params, string $signType = 'RSA2')
-    {
-        if(empty($params)){
-            throw new \Exception('签名参数为空！');
+        if (empty($params)) {
+            throw new \Exception('缺少公共参数！');
         }
+        $this->service = $params['service'] ?? '';
+        $this->partner = $params['partner'] ?? '';
+        $this->inputCharset = $params['_input_charset'] ?? 'UTF-8';
+        $this->signType = $params['sign_type'] ?? 'RSA';
+        $this->notifyUrl = $params['notify_url'] ?? '';
+        $this->returnUrl = $params['return_url'] ?? '';
+        return $this;
+    }
+
+    /**
+     * 设置商户私钥
+     * @param string $key
+     */
+    public function setPrivateKey(string $key)
+    {
+        if (empty($key)) {
+            throw new \Exception('私钥不能为空！');
+        }
+        # 无论输入的是什么格式，保证输出的都是标准格式
+        $tempKey = str_replace('-----BEGIN RSA PRIVATE KEY-----', '', $key);
+        $tempKey = str_replace('-----END RSA PRIVATE KEY-----', '', $key);
+        $tempKey = str_replace("\n", '', $key);
+        $this->privateKey = "-----BEGIN RSA PRIVATE KEY-----\n".wordwrap($tempKey, 64, "\n", true)."\n-----END RSA PRIVATE KEY-----";
+        unset($tempKey);
+        return $this;
+    }
+
+    /**
+     * 获取sign签名
+     * @param array $data
+     */
+    protected function setSign(array $data)
+    {
+        $uriString = $this->createUriString($data);
+        switch ($this->signType) {
+            case 'MD5':
+                return $this->md5Sign($uriString);
+                break;
+            case 'DSA':
+            case 'RSA':
+                return $this->rsaSign($uriString);
+                break;
+            default:
+                throw new \Exception('签名方式错误！');
+                break;
+        }
+    }
+
+    /**
+     * 拼接字典序key=value字符串，&连接
+     * @param  array  $data [description]
+     * @return [type]       [description]
+     */
+    protected function createUriString(array $data): string
+    {
+        if (empty($data)) {
+            throw new \Exception('缺少签名参数！');
+        }
+
+        # 除去空值
+        $data = array_filter($data);
         # 排字典序
-        ksort($params);
+        ksort($data);
 
-        $str = '';
-        foreach ($params as $k => $v) {
-            $str .= $k.'='.$v.'&';
+        $string = '';
+        foreach ($data as $key => $value) {
+            if ($key == 'sign' || $key == 'sign_type') {
+                continue;
+            }
+            $string .= $key.'='.urlencode($value).'&';
         }
-        unset($k, $v);
-        $str = substr($str, 0, -1);
+        $string = substr($string, 0, -1);
+        return $string;        
+    }
 
-        if (!is_null($this->rsaPrivateKey)){
-            $priKey = "-----BEGIN RSA2 PRIVATE KEY-----\n".wordwrap($this->rsaPrivateKey, 64, "\n", true)."\n-----END RSA2 PRIVATE KEY-----";
-        }else {
-            $keyCont = (string)file_get_contents($this->rsaPrivateKeyPath);
-            $priKey = openssl_get_privatekey($keyCont);
+    /**
+     * RSA算法签名
+     * @param  string $uri
+     * @return
+     */
+    protected function rsaSign(string $uri)
+    {
+        if (empty(trim($uri))) {
+            throw new \Exception('签名字符串为空！');
         }
-        ($priKey) or exit('的私钥格式错误，请检查RSA私钥配置');
-        if ('RSA2' == $signType) {
-            openssl_sign($str, $sign, $priKey, OPENSSL_ALGO_SHA256);
+        $res = openssl_get_privatekey($this->privateKey);
+        if ($res) {
+            openssl_sign($uri, $sign, $res);
         } else {
-            openssl_sign($str, $sign, $priKey);
+            throw new \Exception('证书格式错误！');
         }
-        
-        if (is_file($this->rsaPrivateKeyPath)) {
-            openssl_free_key($priKey);
-        }
+        openssl_free_key($res);
         return base64_encode($sign);
     }
 
-    protected function checkSign()
+    /**
+     * MD5算法签名
+     * @param  string $uri
+     * @return
+     */
+    protected function md5Sign(string $uri)
     {
-        # code...
+        if (empty(trim($uri))) {
+            throw new \Exception('签名字符串为空！');
+        }
+        return md5($uri).$this->priateKey;
     }
     
-
+    /**
+     * 执行支付
+     * @param  string $outTradeNo
+     * @param  string $subject
+     * @param  [type] $totalFee
+     * @param  string $sellerId
+     * @param  array  $notMustData
+     * @return
+     */
+    abstract public function execute(string $outTradeNo, string $subject, $totalFee, string $sellerId, array $notMustData = []);
 }
