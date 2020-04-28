@@ -84,7 +84,7 @@ abstract class AlipayClient
             $str .= $k.'='.$v.'&';
         }
         unset($k, $v);
-        $str = rtrim($str, '&');
+        $str = substr($str, 0, -1);
 
         if (!is_null($this->rsaPrivateKey)){
             $priKey = "-----BEGIN RSA2 PRIVATE KEY-----\n".wordwrap($this->rsaPrivateKey, 64, "\n", true)."\n-----END RSA2 PRIVATE KEY-----";
