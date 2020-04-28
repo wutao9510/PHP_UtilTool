@@ -31,19 +31,7 @@ abstract class AlipayClient
      * 设置基本参数
      * @param array $params
      */
-    public function setBasicParams(array $params)
-    {
-        if (empty($params)) {
-            throw new \Exception('缺少公共参数！');
-        }
-        $this->service = $params['service'] ?? '';
-        $this->partner = $params['partner'] ?? '';
-        $this->inputCharset = $params['_input_charset'] ?? 'UTF-8';
-        $this->signType = $params['sign_type'] ?? 'RSA';
-        $this->notifyUrl = $params['notify_url'] ?? '';
-        $this->returnUrl = $params['return_url'] ?? '';
-        return $this;
-    }
+    abstract public function setBasicParams(array $params);
 
     /**
      * 设置商户私钥
@@ -153,5 +141,5 @@ abstract class AlipayClient
      * @param  array  $notMustData
      * @return
      */
-    abstract public function execute(string $outTradeNo, string $subject, $totalFee, string $sellerId, array $notMustData = []);
+    abstract public function execute(string $outTradeNo, string $subject, $totalFee, string $sellerId, string $showUrl, array $notMustData = []);
 }

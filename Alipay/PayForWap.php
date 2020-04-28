@@ -3,16 +3,19 @@ namespace Chenmu\Alipay;
 
 use Chenmu\Sys\{Curl, Log};
 
-class PayForDirect extends AlipayClient
+class PayForWap extends AlipayClient
 {
     # 对象实例
     private static $instance = null;
 
     # 接口名称
-    public $service = 'create_direct_pay_by_user';
+    public $service = 'alipay.wap.create.direct.pay.by.user';
 
     # 支付类型，只支持取值为1（商品购买）
     public $paymentType = '1';
+
+    # 用户付款中途退出返回商户网站的地址
+    public $showUrl = null;
 
     private function __construct(){}
 
@@ -20,7 +23,7 @@ class PayForDirect extends AlipayClient
 
     /**
      * 单例出口
-     * @return PayForDirect|null
+     * @return PayForWap|null
      */
     public static function instance()
     {
@@ -32,35 +35,17 @@ class PayForDirect extends AlipayClient
     }
 
     /**
-     * 设置基本参数
-     * @param array $params
-     */
-    public function setBasicParams(array $params)
-    {
-        if (empty($params)) {
-            throw new \Exception('缺少公共参数！');
-        }
-        $this->service = $params['service'] ?? '';
-        $this->partner = $params['partner'] ?? '';
-        $this->inputCharset = $params['_input_charset'] ?? 'UTF-8';
-        $this->signType = $params['sign_type'] ?? 'RSA';
-        $this->notifyUrl = $params['notify_url'] ?? '';
-        $this->returnUrl = $params['return_url'] ?? '';
-        return $this;
-    }
-
-    /**
      * 执行支付
      * @param  string $outTradeNo
      * @param  string $subject
-     * @param  string|float $totalFee
+     * @param  [type] $totalFee
      * @param  string $sellerId
      * @param  array  $notMustData
      * @return
      */
     public function execute(string $outTradeNo, string $subject, $totalFee, string $sellerId, array $notMustData = [])
     {
-        if (empty($outTradeNo) || empty($subject) || empty($totalFee) || empty($sellerId)) {
+        if (empty($outTradeNo) || empty($subject) || empty($totalFee) || empty($sellerId) || empty($showUrl)) {
             throw new \Exception('业务参数不完整！');
         }
         $reqParams['service'] = $this->service;
@@ -78,7 +63,7 @@ class PayForDirect extends AlipayClient
         $reqParams['subject'] = trim($subject);
         $reqParams['total_fee'] = $totalFee;
         $reqParams['seller_id'] = trim($sellerId);
-
+        $reqParams['show_url'] = $this->showUrl;;
         if (!empty($notMustData)) {
             $reqParams = array_merge($reqParams, $notMustData);
         }
@@ -96,15 +81,15 @@ class PayForDirect extends AlipayClient
     }
 
     /**
-     * 验签
-     * 处理接收页面跳转同步通知
-     * 处理服务器异步通知
-     * @param  array  $data
-     * @return bool
+     * 设置用户付款中途退出返回商户网站的地址
+     * @param string $url
      */
-    public function checkSign(array $data): bool
+    public function setShowUrl(string $url)
     {
-        $sign = $this->setSign($data);
-        return (bool)($sign === $data['sign']);
+        if(empty(trim($url))){
+            throw new \Exception('地址不能为空！');
+        }
+        $this->showUrl = $url;
+        return $this;
     }
 }
