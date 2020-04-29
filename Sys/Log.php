@@ -5,6 +5,8 @@ namespace Chenmu\Sys;
  * 写日志
  * 每天独立一个文件(write)方法
  * 写入总的一个文件(allIn)方法
+ * Class Log
+ * @package Chenmu\Sys
  */
 class Log
 {
@@ -21,6 +23,7 @@ class Log
 
     /**
      * 单例出口
+     * @return Log|null
      */
     public static function instance()
     {

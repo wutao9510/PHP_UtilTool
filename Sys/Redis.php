@@ -1,6 +1,10 @@
 <?php
 namespace Chenmu\Sys;
 
+/**
+ * Class Redis
+ * @package Chenmu\Sys
+ */
 class Redis
 {
     # 实例组

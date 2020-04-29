@@ -3,6 +3,8 @@ namespace Chenmu\Sys;
 
 /**
  * Curl类(单例)
+ * Class Curl
+ * @package Chenmu\Sys
  */
 class Curl
 {
@@ -22,6 +24,7 @@ class Curl
 
     /**
      * 单例出口
+     * @return Curl|null
      */
     public static function instance()
     {
@@ -34,6 +37,9 @@ class Curl
 
     /**
      * get请求
+     * @param string $url
+     * @param array $data
+     * @return bool|string
      */
     public function get(string $url, array $data = [])
     {
@@ -57,6 +63,9 @@ class Curl
 
     /**
      * post请求
+     * @param string $url
+     * @param array $data
+     * @return bool|string
      */
     public function post(string $url, array $data = [])
     {
@@ -81,6 +90,9 @@ class Curl
 
     /**
      * post源数据请求
+     * @param string $url
+     * @param array $data
+     * @return bool|string
      */
     public function postRawData(string $url, $data = [])
     {
@@ -107,6 +119,11 @@ class Curl
 
     /**
      * 发送需要使用证书的post请求
+     * @param string $url
+     * @param $data
+     * @param string $certPath
+     * @param string $keyPath
+     * @return bool|string
      */
     public function postSslVerify(string $url, $data, string $certPath, string $keyPath)
     {
