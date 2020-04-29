@@ -3,16 +3,13 @@ namespace Chenmu\Alipay;
 
 use Chenmu\Sys\{Curl, Log};
 
-class PayForWap extends AlipayClient
+class RefundFastpayByPwd extends AlipayClient
 {
     # 对象实例
     private static $instance = null;
 
     # 接口名称
-    public $service = 'alipay.wap.create.direct.pay.by.user';
-
-    # 支付类型，只支持取值为1（商品购买）
-    public $paymentType = '1';
+    public $service = 'refund_fastpay_by_platform_pwd';
 
     private function __construct(){}
 
@@ -20,7 +17,7 @@ class PayForWap extends AlipayClient
 
     /**
      * 单例出口
-     * @return PayForWap|null
+     * @return RefundFastpayByPwd|null
      */
     public static function instance()
     {
@@ -42,47 +39,37 @@ class PayForWap extends AlipayClient
         }
         $this->partner = $params['partner'] ?? '';
         $this->inputCharset = $params['_input_charset'] ?? 'UTF-8';
-        $this->signType = $params['sign_type'] ?? 'RSA';
+        $this->signType = $params['sign_type'] ?? 'MD5';
         $this->notifyUrl = $params['notify_url'] ?? '';
         $this->returnUrl = $params['return_url'] ?? '';
         return $this;
     }
 
-
-
     /**
-     * 执行支付
-     * @param  string $outTradeNo
-     * @param  string $subject
-     * @param  [type] $totalFee
-     * @param  string $sellerId
-     * @param  array  $notMustData
-     * @return
+     * 执行退款请求
+     * @param  string $sellerUserId
+     * @param  string $batchNo
+     * @param  string $batchNum
+     * @param  string $detailData
+     * @return [type]
      */
-    public function execute(string $outTradeNo, string $subject, $totalFee, string $sellerId, string $showUrl, array $notMustData = [])
+    public function execute(string $sellerUserId, string $batchNo, string $batchNum, string $detailData)
     {
-        if (empty($outTradeNo) || empty($subject) || empty($totalFee) || empty($sellerId) || empty($showUrl)) {
-            throw new \Exception('业务参数不完整！');
+        if (empty($sellerUserId) || empty($batchNo) || empty($batchNum) || empty($detailData)) {
+            throw new \Exception('缺少业务参数！');
         }
         $reqParams['service'] = $this->service;
-        $reqParams['payment_type'] = $this->paymentType;
-        $reqParams['partner'] = trim($outTradeNo);
-        $reqParams['_input_charset'] = trim($outTradeNo);
+        $reqParams['partner'] = $this->partner;
+        $reqParams['_input_charset'] = $this->inputCharset;
         $reqParams['sign_type'] = $this->signType;
-        if (!empty($this->notifyUrl)) {
+        if ($this->notifyUrl) {
             $reqParams['notify_url'] = $this->notifyUrl;
         }
-        if (!empty($this->returnUrl)) {
-            $reqParams['return_url'] = $this->returnUrl;
-        }
-        $reqParams['out_trade_no'] = trim($outTradeNo);
-        $reqParams['subject'] = trim($subject);
-        $reqParams['total_fee'] = $totalFee;
-        $reqParams['seller_id'] = trim($sellerId);
-        $reqParams['show_url'] = $showUrl;;
-        if (!empty($notMustData)) {
-            $reqParams = array_merge($reqParams, $notMustData);
-        }
+        $reqParams['seller_user_id'] = trim($sellerUserId);
+        $reqParams['refund_date'] = date('Y-m-d H:i:s');
+        $reqParams['batch_no'] = trim($batchNo);
+        $reqParams['batch_num'] = trim($batchNum);
+        $reqParams['detail_data'] = $detailData;
 
         $sign = $this->setSign($reqParams);
         $reqParams['sign'] = $sign;

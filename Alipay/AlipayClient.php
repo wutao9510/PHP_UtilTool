@@ -52,6 +52,19 @@ abstract class AlipayClient
     }
 
     /**
+     * 验签
+     * 处理接收页面跳转同步通知
+     * 处理服务器异步通知
+     * @param  array  $data
+     * @return bool
+     */
+    public function checkSign(array $data): bool
+    {
+        $sign = $this->setSign($data);
+        return (bool)($sign === $data['sign']);
+    }
+
+    /**
      * 获取sign签名
      * @param array $data
      */
@@ -74,8 +87,8 @@ abstract class AlipayClient
 
     /**
      * 拼接字典序key=value字符串，&连接
-     * @param  array  $data [description]
-     * @return [type]       [description]
+     * @param  array  $data
+     * @return string
      */
     protected function createUriString(array $data): string
     {
@@ -131,15 +144,4 @@ abstract class AlipayClient
         }
         return md5($uri).$this->priateKey;
     }
-    
-    /**
-     * 执行支付
-     * @param  string $outTradeNo
-     * @param  string $subject
-     * @param  [type] $totalFee
-     * @param  string $sellerId
-     * @param  array  $notMustData
-     * @return
-     */
-    abstract public function execute(string $outTradeNo, string $subject, $totalFee, string $sellerId, string $showUrl, array $notMustData = []);
 }

@@ -3,16 +3,13 @@ namespace Chenmu\Alipay;
 
 use Chenmu\Sys\{Curl, Log};
 
-class Quicklogin extends AlipayClient
+class BulkPayment extends AlipayClient
 {
     # 对象实例
     private static $instance = null;
 
     # 接口名称
-    public $service = 'alipay.auth.authorize';
-
-    # 需要授权执行的目标服务地址，本服务中，此参数固定为user.auth.quick.login
-    protected $targetService = 'user.auth.quick.login';
+    public $service = 'batch_trans_notify';
 
     private function __construct(){}
 
@@ -20,7 +17,7 @@ class Quicklogin extends AlipayClient
 
     /**
      * 单例出口
-     * @return Quicklogin|null
+     * @return BulkPayment|null
      */
     public static function instance()
     {
@@ -30,7 +27,7 @@ class Quicklogin extends AlipayClient
         self::$instance = new self;
         return self::$instance;
     }
-
+    
     /**
      * 设置基本参数
      * @param array $params
@@ -43,26 +40,28 @@ class Quicklogin extends AlipayClient
         $this->partner = $params['partner'] ?? '';
         $this->inputCharset = $params['_input_charset'] ?? 'UTF-8';
         $this->signType = $params['sign_type'] ?? 'MD5';
-        $this->returnUrl = $params['return_url'] ?? '';
+        $this->notifyUrl = $params['notify_url'] ?? '';
         return $this;
     }
 
     /**
-     * 执行快捷登录
-     * @param  array  $bizParams
+     * 执行批量付款
+     * @param  array $data
      * @return [type]
      */
-    public function execute(array $bizParams =[])
+    public function execute(array $data)
     {
+        if (empty($data)) {
+            throw new \Exception('缺少业务参数！');
+        }
         $reqParams['service'] = $this->service;
         $reqParams['partner'] = $this->partner;
         $reqParams['_input_charset'] = $this->inputCharset;
         $reqParams['sign_type'] = $this->signType;
-        $reqParams['return_url'] = $this->returnUrl;
-        $reqParams['target_service'] = $this->targetService;
-        if ($bizParams) {
-            $reqParams = array_merge($reqParams, $bizParams);
+        if ($this->notifyUrl) {
+            $reqParams['notify_url'] = $this->notifyUrl;
         }
+        $reqParams = array_merge($reqParams, $data);
         $sign = $this->setSign($reqParams);
         $reqParams['sign'] = $sign;
 

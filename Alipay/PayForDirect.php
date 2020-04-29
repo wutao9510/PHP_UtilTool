@@ -40,7 +40,6 @@ class PayForDirect extends AlipayClient
         if (empty($params)) {
             throw new \Exception('缺少公共参数！');
         }
-        $this->service = $params['service'] ?? '';
         $this->partner = $params['partner'] ?? '';
         $this->inputCharset = $params['_input_charset'] ?? 'UTF-8';
         $this->signType = $params['sign_type'] ?? 'RSA';
@@ -93,18 +92,5 @@ class PayForDirect extends AlipayClient
             Log::instance()->write($e->getMessage());
             return false;
         }
-    }
-
-    /**
-     * 验签
-     * 处理接收页面跳转同步通知
-     * 处理服务器异步通知
-     * @param  array  $data
-     * @return bool
-     */
-    public function checkSign(array $data): bool
-    {
-        $sign = $this->setSign($data);
-        return (bool)($sign === $data['sign']);
     }
 }
