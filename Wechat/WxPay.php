@@ -1,15 +1,17 @@
 <?php
 namespace Chenmu\Wechat;
 
-use Chenmu\Sys\Curl;
-use Chenmu\Sys\Xml;
+use Chenmu\Sys\{Curl, Xml};
 
 class Wxpay
 {
+    # 对象实例
     private static $instance = null;
 
+    # 商户配置
     private $config = [];
 
+    # 网关
     protected static $payBaseUrl = 'https://api.mch.weixin.qq.com';
 
     private function __clone(){}

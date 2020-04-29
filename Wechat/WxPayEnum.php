@@ -5,6 +5,7 @@ class WxpayEnum
 {
     private function __construct(){}
 
+    # 支付错误码
     protected static $errInfo = [
         # Common
         'SYSTEMERROR' => '系统错误，请重试！',

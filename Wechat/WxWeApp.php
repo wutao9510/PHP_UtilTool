@@ -10,10 +10,13 @@ use Chenmu\Sys\Curl;
  */
 class WxWeApp
 {
+	# 对象实例
 	private static $instance = null;
 
+	# 主体配置
 	private $wxConfig = [];
 
+	# 网关
 	protected static $wxApiUrl = 'https://api.weixin.qq.com';
 
 	private function __clone(){}
@@ -288,11 +291,5 @@ class WxWeApp
 			exit($e->getMessage());
 		}
 	}
-
-	public function uploadTempMedia()
-	{
-		# code...
-	}
-
 
 }
