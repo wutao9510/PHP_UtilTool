@@ -4,7 +4,7 @@ Using Ofently!
 使用的是mapi接口，可参考：https://opendocs.alipay.com/open/009yt3
 ### 1）BulkPayment 批量付款到支付宝账户
 ### 2）CustomsDeclaration 报关
-### 3）PayForDirect 即时到账
+### 3）PayForDirect 即时到账(网站支付)
 ### 4）PayForWap 手机网站支付
 ### 5）QuickLogin 快捷登入
 ### 6）RefundFastpayByPwd 即时到账有密退款
