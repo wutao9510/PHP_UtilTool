@@ -13,36 +13,4 @@ use Chenmu\Sys\{Xml, Log};
 
 // Log::instance()->write('test write!');
 
-// echo  __DIR__ . DIRECTORY_SEPARATOR;
 
-// echo strtotime('20200423');
-// echo "\\/";
-abstract class a{
-	const SD = 'sd';
-
-	public function c()
-	{
-		echo 'c';
-		return $this;
-	}
-
-	public function d()
-	{
-		echo 'd';
-		return $this;
-	}
-
-	abstract public function aa();
-}
-class b extends a{
-	public static function get()
-	{
-		echo self::SD;
-	}
-
-	public function aa()
-	{
-		$this->c();
-	}
-}
-(new b)->c()->d();
