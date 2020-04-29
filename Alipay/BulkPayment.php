@@ -27,10 +27,12 @@ class BulkPayment extends AlipayClient
         self::$instance = new self;
         return self::$instance;
     }
-    
+
     /**
      * 设置基本参数
      * @param array $params
+     * @return $this
+     * @throws \Exception
      */
     public function setBasicParams(array $params)
     {
@@ -46,8 +48,9 @@ class BulkPayment extends AlipayClient
 
     /**
      * 执行批量付款
-     * @param  array $data
-     * @return [type]
+     * @param array $data
+     * @return bool
+     * @throws \Exception
      */
     public function execute(array $data)
     {

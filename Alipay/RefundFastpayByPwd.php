@@ -27,10 +27,12 @@ class RefundFastpayByPwd extends AlipayClient
         self::$instance = new self;
         return self::$instance;
     }
-    
+
     /**
      * 设置基本参数
      * @param array $params
+     * @return $this
+     * @throws \Exception
      */
     public function setBasicParams(array $params)
     {
@@ -47,11 +49,12 @@ class RefundFastpayByPwd extends AlipayClient
 
     /**
      * 执行退款请求
-     * @param  string $sellerUserId
-     * @param  string $batchNo
-     * @param  string $batchNum
-     * @param  string $detailData
-     * @return [type]
+     * @param string $sellerUserId
+     * @param string $batchNo
+     * @param string $batchNum
+     * @param string $detailData
+     * @return bool
+     * @throws \Exception
      */
     public function execute(string $sellerUserId, string $batchNo, string $batchNum, string $detailData)
     {

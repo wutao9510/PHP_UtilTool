@@ -34,6 +34,8 @@ class Quicklogin extends AlipayClient
     /**
      * 设置基本参数
      * @param array $params
+     * @return $this
+     * @throws \Exception
      */
     public function setBasicParams(array $params)
     {
@@ -49,8 +51,9 @@ class Quicklogin extends AlipayClient
 
     /**
      * 执行快捷登录
-     * @param  array  $bizParams
-     * @return [type]
+     * @param array $bizParams
+     * @return bool
+     * @throws \Exception
      */
     public function execute(array $bizParams =[])
     {
