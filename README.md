@@ -18,3 +18,4 @@ Using Ofently!
 ### 1）Xml xml生成和解析
 ### 2）Curl Curl网络请求
 ### 3）Log 写日志
+### 3）Redis redis服务器
