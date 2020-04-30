@@ -11,10 +11,7 @@ final class AutoLoader
 
 	private function __clone(){}
 
-	/**
-	 * 命名空间与路径
-	 * @var array
-	 */
+	# 命名空间与路径
 	protected static $vndorMap = [
 		'Chenmu' => __DIR__ . DIRECTORY_SEPARATOR
 	];
