@@ -1,4 +1,4 @@
-# utilTool
+# PHP utilTool
 Using Ofently!
 
 所有配置请配在你的环境中，通过参数方式传入即可！
