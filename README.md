@@ -27,6 +27,12 @@ Using Ofently!
 3）WxpayEnum 支付错误码
 
 4）WxOpenWeb 微信开放平台网站应用
+
+## 3. QQ
+QQ开放接口，可参考：https://wiki.connect.qq.com/%E7%BD%91%E7%AB%99%E5%BA%94%E7%94%A8%E6%8E%A5%E5%85%A5%E6%B5%81%E7%A8%8B
+
+1）QQopenWeb QQ快捷登入
+
 ## 3. Sys
 基础工具类
 
