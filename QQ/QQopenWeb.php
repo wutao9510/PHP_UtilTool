@@ -60,7 +60,8 @@ class QQopenWeb
 
             $result = Curl::instance()->get(self::$qqApiUrl.'/oauth2.0/token', $params);
             if ($result) {
-                return explode('&', urldecode($result));
+                parse_str(urldecode($result), $arr);
+                return $arr;
             }else {
                 throw new \Exception('请求失败！');
             }
@@ -87,7 +88,8 @@ class QQopenWeb
             $params['grant_type'] = 'refresh_token';
             $result = Curl::instance()->get(self::$qqApiUrl.'/oauth2.0/token', $params);
             if ($result) {
-                return explode('&', urldecode($result));
+                parse_str(urldecode($result), $arr);
+                return $arr;
             }else {
                 throw new \Exception('请求失败！');
             }
