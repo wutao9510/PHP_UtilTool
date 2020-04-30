@@ -30,10 +30,12 @@ class PayForWap extends AlipayClient
         self::$instance = new self;
         return self::$instance;
     }
-    
+
     /**
      * 设置基本参数
      * @param array $params
+     * @return $this
+     * @throws \Exception
      */
     public function setBasicParams(array $params)
     {
@@ -48,16 +50,16 @@ class PayForWap extends AlipayClient
         return $this;
     }
 
-
-
     /**
      * 执行支付
-     * @param  string $outTradeNo
-     * @param  string $subject
-     * @param  [type] $totalFee
-     * @param  string $sellerId
-     * @param  array  $notMustData
-     * @return
+     * @param string $outTradeNo
+     * @param string $subject
+     * @param $totalFee
+     * @param string $sellerId
+     * @param string $showUrl
+     * @param array $notMustData
+     * @return bool
+     * @throws \Exception
      */
     public function execute(string $outTradeNo, string $subject, $totalFee, string $sellerId, string $showUrl, array $notMustData = [])
     {

@@ -33,9 +33,10 @@ abstract class AlipayClient
      */
     abstract public function setBasicParams(array $params);
 
-    /**
-     * 设置商户私钥
+    /***
      * @param string $key
+     * @return $this
+     * @throws \Exception
      */
     public function setPrivateKey(string $key)
     {
@@ -44,8 +45,8 @@ abstract class AlipayClient
         }
         # 无论输入的是什么格式，保证输出的都是标准格式
         $tempKey = str_replace('-----BEGIN RSA PRIVATE KEY-----', '', $key);
-        $tempKey = str_replace('-----END RSA PRIVATE KEY-----', '', $key);
-        $tempKey = str_replace("\n", '', $key);
+        $tempKey = str_replace('-----END RSA PRIVATE KEY-----', '', $tempKey);
+        $tempKey = str_replace("\n", '', $tempKey);
         $this->privateKey = "-----BEGIN RSA PRIVATE KEY-----\n".wordwrap($tempKey, 64, "\n", true)."\n-----END RSA PRIVATE KEY-----";
         unset($tempKey);
         return $this;
@@ -55,8 +56,9 @@ abstract class AlipayClient
      * 验签
      * 处理接收页面跳转同步通知
      * 处理服务器异步通知
-     * @param  array  $data
+     * @param array $data
      * @return bool
+     * @throws \Exception
      */
     public function checkSign(array $data): bool
     {
@@ -67,6 +69,8 @@ abstract class AlipayClient
     /**
      * 获取sign签名
      * @param array $data
+     * @return string
+     * @throws \Exception
      */
     protected function setSign(array $data)
     {
@@ -87,8 +91,9 @@ abstract class AlipayClient
 
     /**
      * 拼接字典序key=value字符串，&连接
-     * @param  array  $data
+     * @param array $data
      * @return string
+     * @throws \Exception
      */
     protected function createUriString(array $data): string
     {
@@ -114,8 +119,9 @@ abstract class AlipayClient
 
     /**
      * RSA算法签名
-     * @param  string $uri
-     * @return
+     * @param string $uri
+     * @return string
+     * @throws \Exception
      */
     protected function rsaSign(string $uri)
     {
@@ -134,8 +140,9 @@ abstract class AlipayClient
 
     /**
      * MD5算法签名
-     * @param  string $uri
-     * @return
+     * @param string $uri
+     * @return string
+     * @throws \Exception
      */
     protected function md5Sign(string $uri)
     {

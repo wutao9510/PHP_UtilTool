@@ -3,6 +3,8 @@ namespace Chenmu\Sys;
 
 /**
  * xml读写类(单例)
+ * Class Xml
+ * @package Chenmu\Sys
  */
 class Xml
 {
@@ -17,6 +19,7 @@ class Xml
 
     /**
      * 单例出口
+     * @return Xml|null
      */
     public static function instance()
     {
@@ -29,10 +32,10 @@ class Xml
 
     /**
      * 生成xml文件/string
-     * @param  array data 数据
-     * @param  string savePath 保存路径，传null输出字符串
-     * @param  string rootName 根节点
-     * @return void/string
+     * @param array $data
+     * @param string|null $savePath
+     * @param string $rootName
+     * @return bool|mixed
      */
     public function createSimpleXml(array $data, string $savePath = null, string $rootName = 'root')
     {
@@ -56,8 +59,8 @@ class Xml
 
     /**
      * 读取xml文件
-     * @param  string
-     * @return object
+     * @param string $filePath
+     * @return \SimpleXMLElement
      */
     public function readXmlFile(string $filePath)
     {
@@ -69,8 +72,8 @@ class Xml
 
     /**
      * 读取xml字符串
-     * @param  string
-     * @return object
+     * @param string $xmlString
+     * @return \SimpleXMLElement
      */
     public function readXmlString(string $xmlString)
     {
@@ -82,8 +85,8 @@ class Xml
 
     /**
      * xml转array
-     * @param  string       $xml
-     * @param  bool|boolean $stringOrFile
+     * @param string $xml
+     * @param bool $stringOrFile
      * @return array
      */
     public function xmlToArray(string $xml, bool $stringOrFile = true): array
@@ -97,6 +100,8 @@ class Xml
 
     /**
      * 数组通过字符串拼接成xml
+     * @param array $arr
+     * @return string
      */
     public function array2xml(array $arr): string
     {
@@ -108,8 +113,8 @@ class Xml
 
     /**
      * 递归拼接xml
-     * @param  string &$xml
-     * @param  array  $data
+     * @param string $xml
+     * @param array $data
      * @return string
      */
     protected function loopConnectXml(string &$xml, array $data): string
@@ -126,9 +131,8 @@ class Xml
 
     /**
      * 递归插入节点
-     * @param  object root xml
-     * @param  array data
-     * @return void
+     * @param $obj
+     * @param array $data
      */
     protected function insertData($obj, array $data)
     {
@@ -163,8 +167,8 @@ class Xml
 
     /**
      * 获取除去键key的其他元素的键
-     * @param  string key
-     * @param  array arr
+     * @param string $key
+     * @param array $arr
      * @return array
      */
     protected function getExceptKey(string $key, array $arr)

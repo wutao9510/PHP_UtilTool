@@ -28,7 +28,9 @@ class CustomsDeclaration extends AlipayClient
 
     /**
      * 单例出口
+     * @param string $customsType
      * @return CustomsDeclaration|null
+     * @throws \Exception
      */
     public static function instance(string $customsType)
     {
@@ -38,10 +40,12 @@ class CustomsDeclaration extends AlipayClient
         self::$instance = new self($customsType);
         return self::$instance;
     }
-    
+
     /**
      * 设置基本参数
      * @param array $params
+     * @return $this
+     * @throws \Exception
      */
     public function setBasicParams(array $params)
     {
@@ -56,14 +60,15 @@ class CustomsDeclaration extends AlipayClient
 
     /**
      * 执行报关
-     * @param  string $outReqNo
-     * @param  string $tradeNo
-     * @param  string $mchCustomsCode
-     * @param  string $amount
-     * @param  string $customsPlace
-     * @param  string $mchCustomsName
-     * @param  array  $notMustData
-     * @return [type]
+     * @param string $outReqNo
+     * @param string $tradeNo
+     * @param string $mchCustomsCode
+     * @param string $amount
+     * @param string $customsPlace
+     * @param string $mchCustomsName
+     * @param array $notMustData
+     * @return bool
+     * @throws \Exception
      */
     public function execute(string $outReqNo, string $tradeNo, string $mchCustomsCode, string $amount, string $customsPlace, string $mchCustomsName, array $notMustData= [])
     {
@@ -99,8 +104,9 @@ class CustomsDeclaration extends AlipayClient
 
     /**
      * 报关查询接口
-     * @param  string $outRequestNos
-     * @return
+     * @param string $outRequestNos
+     * @return bool
+     * @throws \Exception
      */
     public function acquireQuire(string $outRequestNos)
     {
