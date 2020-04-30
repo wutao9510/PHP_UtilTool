@@ -3,7 +3,7 @@ namespace Chenmu\Wechat;
 
 use Chenmu\Sys\{Curl, Log};
 
-class WxOpenWeb
+class WxopenWeb
 {
 	# 对象实例
 	private static $instance = null;
@@ -26,7 +26,7 @@ class WxOpenWeb
      * 单例出口
      * @param string $appId
      * @param string $appSecret
-     * @return WxOpenWeb|null
+     * @return WxopenWeb|null
      */
 	public static function instance(string $appId, string $appSecret)
 	{
