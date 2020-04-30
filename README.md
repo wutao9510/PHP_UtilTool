@@ -1,7 +1,7 @@
 # utilTool
 Using Ofently!
 
-所有配置请在配在你的环境中，通过参数方式传入即可！
+所有配置请配在你的环境中，通过参数方式传入即可！
 ## 1. Alipay
 使用的是mapi接口，可参考：https://opendocs.alipay.com/open/009yt3
 
