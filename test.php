@@ -1,5 +1,5 @@
 <?php
-require_once 'autoload.php';
+require_once 'autoLoad.php';
 
 use Chenmu\Sys\{Xml, Log, Redis};
 
